@@ -1,0 +1,72 @@
+return {
+  {
+    "neovim/nvim-lspconfig",
+    event = "VimEnter",
+    dependencies = { "folke/neodev.nvim", "saghen/blink.cmp" },
+    config = function()
+      -- Setup neovim lua configuration
+      require("neodev").setup()
+      local capabilities = require("blink.cmp").get_lsp_capabilities()
+
+      -- TS/JS
+      vim.lsp.config("ts_ls", {
+        filetypes = {
+          "javascript",
+          "javascriptreact",
+          "javascript.jsx",
+          "typescript",
+          "typescriptreact",
+          "typescript.tsx",
+          "vue",
+        },
+        init_options = {
+          plugins = {
+            {
+              name = "@vue/typescript-plugin",
+              location = vim.fn.stdpath "data"
+                .. "/mason/packages/vue-language-server/node_modules/@vue/language-server",
+              languages = { "vue" },
+            },
+          },
+        },
+        cmd = { "typescript-language-server", "--stdio" },
+        capabilities = capabilities,
+      })
+      vim.lsp.enable "ts_ls"
+
+      -- Vue JS
+      vim.lsp.config("vue_ls", { capabilities = capabilities })
+      vim.lsp.enable "vue_ls"
+
+      -- Lua
+      vim.lsp.config("lua_ls", {
+        capabilities = capabilities,
+        settings = {
+          Lua = {
+            runtime = {
+              -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+              version = "LuaJIT",
+            },
+            diagnostics = {
+              -- Get the language server to recognize the `vim` global
+              globals = { "vim" },
+            },
+            workspace = {
+              -- Make the server aware of Neovim runtime files
+              library = {
+                vim.env.VIMRUNTIME .. "/lua", -- core Neovim API
+                vim.env.VIMRUNTIME .. "/lua/vim/lsp", -- lspconfig / diagnostics
+                vim.fn.stdpath "config" .. "/lua", -- my config
+              },
+            },
+            -- Do not send telemetry data containing a randomized but unique identifier
+            telemetry = {
+              enable = false,
+            },
+          },
+        },
+      })
+      vim.lsp.enable "lua_ls"
+    end,
+  },
+}
