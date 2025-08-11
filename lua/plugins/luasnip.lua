@@ -93,6 +93,12 @@ return {
         t { "", "}" },
       }),
 
+      s({ trig = "te", name = "Just Vue template" }, {
+        t { "<template>", "" },
+        i(0),
+        t { "", "</template>" },
+      }),
+
       s({ trig = "SFC", name = "Vue SFC" }, {
         t { "<script setup lang='ts'>", "", "" },
         t "</script>",

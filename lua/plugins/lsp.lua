@@ -67,6 +67,13 @@ return {
         },
       })
       vim.lsp.enable "lua_ls"
+
+      -- CSS
+      vim.lsp.config("cssls", {
+        capabilities = capabilities,
+        filetypes = { "css", "scss", "less" },
+      })
+      vim.lsp.enable "cssls"
     end,
   },
 }

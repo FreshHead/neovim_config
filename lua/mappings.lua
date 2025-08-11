@@ -13,16 +13,26 @@ map("n", "<leader>d", function()
   vim.diagnostic.open_float { border = "rounded" }
 end, { desc = "Line Diagnostics" })
 
+map("n", "gd", require("telescope.builtin").lsp_definitions, { desc = "Go to Definition" })
+map("n", "gr", require("telescope.builtin").lsp_references, { desc = "List References" })
+map("n", "gi", require("telescope.builtin").lsp_implementations, { desc = "Go to Implementation" })
 map("n", "gD", vim.lsp.buf.declaration, { desc = "Go to Declaration" })
-map("n", "gd", vim.lsp.buf.definition, { desc = "Go to Definition" })
-map("n", "gr", vim.lsp.buf.references, { desc = "List References" })
-map("n", "gi", vim.lsp.buf.implementation, { desc = "Go to Implementation" })
 map("n", "K", function()
   vim.lsp.buf.hover { border = "rounded" }
 end)
 map("n", "<leader>le", "<cmd>e<CR>", { desc = "LSP restart", remap = true })
 
 map("n", "<leader>c", vim.lsp.buf.code_action, { desc = "Code Actions" })
+
+map("n", "<leader>ca", function()
+  vim.lsp.buf.code_action {
+    context = {
+      only = { "source" },
+      diagnostics = {},
+    },
+    apply = false,
+  }
+end, { desc = "File Code Actions" })
 
 -- Копируем текущее имя файла в буфер
 map("n", "cp", ':let @+ = expand("%:t:r")<cr>')
@@ -31,24 +41,7 @@ map("x", "p", '"_dP', { desc = "Replace without yanking" })
 map("n", "c", '"_c', { desc = "Change without yanking" })
 map("n", "C", '"_C', { desc = "Change until EOL without yanking" })
 
--- function to toggle quick fix list
-local function qf_toggle()
-  local qf_exists = false
-  for _, win in pairs(vim.fn.getwininfo()) do
-    if win["quickfix"] == 1 then
-      qf_exists = true
-    end
-  end
-  if qf_exists == true then
-    vim.cmd "cclose"
-    return
-  end
-  if not vim.tbl_isempty(vim.fn.getqflist()) then
-    vim.cmd "copen"
-  end
-end
-
-map("n", "<leader>q", qf_toggle, { desc = "Toggle Quickfix list" })
+map("n", "<leader>q", require("telescope.builtin").quickfix, { desc = "Show Quickfix in Telescope" })
 map("n", "<leader>M", "<cmd>Mason<CR>", { desc = "Mason" })
 map("n", "<leader>L", "<cmd>Lazy<CR>", { desc = "Lazy" })
 map("n", "<leader>r", vim.lsp.buf.rename, { desc = "LSP Rename" })
