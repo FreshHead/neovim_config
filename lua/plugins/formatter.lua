@@ -17,7 +17,7 @@ return {
       scss = { formatter_to_use },
       graphql = { formatter_to_use },
       markdown = { formatter_to_use },
-      vue = { "eslint_d" },
+      vue = { formatter_to_use, "eslint_d" },
     },
     format_on_save = {
       -- These options will be passed to conform.format()
