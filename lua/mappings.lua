@@ -45,6 +45,13 @@ map("n", "<leader>q", require("telescope.builtin").quickfix, { desc = "Show Quic
 map("n", "<leader>M", "<cmd>Mason<CR>", { desc = "Mason" })
 map("n", "<leader>L", "<cmd>Lazy<CR>", { desc = "Lazy" })
 map("n", "<leader>r", vim.lsp.buf.rename, { desc = "LSP Rename" })
+map("n", "<leader>R", function()
+  local word = vim.fn.expand("<cword>")
+  local input = vim.fn.input("Replace '" .. word .. "' with: ")
+  if input ~= "" then
+    vim.cmd(":%s/\\b" .. word .. "\\b/" .. input .. "/gc")
+  end
+end, { desc = "Global Replace with confirmation" })
 
 map("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
 map("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })

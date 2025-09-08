@@ -112,6 +112,14 @@ return {
       vim.lsp.config("cssls", {
         capabilities = capabilities,
         filetypes = { "css", "scss", "less" },
+        settings = {
+          css = {
+            validate = true,
+            lint = {
+              unknownAtRules = "ignore"
+            }
+          }
+        }
       })
       vim.lsp.enable "cssls"
     end,
