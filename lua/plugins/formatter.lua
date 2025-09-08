@@ -6,10 +6,10 @@ return {
   opts = {
     formatters_by_ft = {
       lua = { "stylua" },
-      typescriptreact = { "eslint_d" },
+      typescriptreact = { "eslint_lsp" },
       javascriptreact = { formatter_to_use },
       javascript = { formatter_to_use },
-      typescript = { "eslint_d" },
+      typescript = { "eslint_lsp" },
       json = { formatter_to_use },
       jsonc = { formatter_to_use },
       html = { formatter_to_use },
@@ -17,7 +17,7 @@ return {
       scss = { formatter_to_use },
       graphql = { formatter_to_use },
       markdown = { formatter_to_use },
-      vue = { formatter_to_use, "eslint_d" },
+      vue = { "eslint_lsp" },
     },
     format_on_save = {
       -- These options will be passed to conform.format()

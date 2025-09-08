@@ -37,6 +37,10 @@ return {
     end
 
     ls.add_snippets("all", {
+      s({ trig = "iapi", name = "import api for coop project" }, {
+        t { "import * as api from '@/transport/api';" },
+      }),
+
       s({ trig = "AC", name = "Abstract class" }, {
         t { "export abstract class " },
         f(get_filename),
@@ -106,7 +110,7 @@ return {
         i(0),
         t { "", "</template>" },
         -- t { '', '', "<style lang='scss'>", '', '' },
-        t { "", "", "<style>", "", "" },
+        t { "", "", "<style scoped>", "", "" },
         t "</style>",
       }),
 

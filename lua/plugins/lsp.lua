@@ -28,6 +28,46 @@ return {
               languages = { "vue" },
             },
           },
+          maxTsServerMemory = 4096,
+          preferences = {
+            includeCompletionsForModuleExports = true,
+            includeCompletionsWithInsertText = true,
+            allowIncompleteCompletions = true,
+            allowRenameOfImportPath = true,
+          },
+        },
+        settings = {
+          typescript = {
+            inlayHints = {
+              includeInlayParameterNameHints = "all",
+              includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+              includeInlayFunctionParameterTypeHints = true,
+              includeInlayVariableTypeHints = true,
+              includeInlayPropertyDeclarationTypeHints = true,
+              includeInlayFunctionLikeReturnTypeHints = true,
+              includeInlayEnumMemberValueHints = true,
+            },
+            suggest = {
+              completeFunctionCalls = true,
+            },
+            preferences = {
+              includePackageJsonAutoImports = "auto",
+            },
+          },
+          javascript = {
+            inlayHints = {
+              includeInlayParameterNameHints = "all",
+              includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+              includeInlayFunctionParameterTypeHints = true,
+              includeInlayVariableTypeHints = true,
+              includeInlayPropertyDeclarationTypeHints = true,
+              includeInlayFunctionLikeReturnTypeHints = true,
+              includeInlayEnumMemberValueHints = true,
+            },
+            suggest = {
+              completeFunctionCalls = true,
+            },
+          },
         },
         cmd = { "typescript-language-server", "--stdio" },
         capabilities = capabilities,
