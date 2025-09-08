@@ -38,18 +38,12 @@ return {
         nvim_cmp = true,
         min_chars = 2,
       },
-      mappings = {
-        -- Переопределяем gf для работы с изображениями
-        ["gf"] = {
-          action = function()
-            if require("obsidian").util.cursor_on_markdown_link() then
-              return "<cmd>ObsidianFollowLink<CR>"
-            else
-              return "gf"
-            end
-          end,
-          opts = { noremap = false, expr = true, buffer = true },
-        },
+      -- Use new keymap system instead of deprecated mappings
+      -- Set up the gf mapping outside of obsidian config
+      disable_frontmatter = true,
+      legacy_commands = false,
+      ui = {
+        enable = false, -- Disable UI features to avoid conceallevel warning
       },
       -- Настройка для обработки изображений
       follow_url_func = function(url)
@@ -67,5 +61,20 @@ return {
         end
       end,
     }
+
+    -- Set up keymaps after obsidian setup (replaces deprecated mappings config)
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "markdown",
+      callback = function()
+        vim.keymap.set("n", "gf", function()
+          local success, result = pcall(function()
+            return vim.cmd("ObsidianFollowLink")
+          end)
+          if not success then
+            vim.cmd("normal! gf")
+          end
+        end, { buffer = true, desc = "Follow obsidian link or normal gf" })
+      end,
+    })
   end,
 }
