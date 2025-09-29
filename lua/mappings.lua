@@ -37,6 +37,9 @@ end, { desc = "File Code Actions" })
 -- Копируем текущее имя файла в буфер
 map("n", "cp", ':let @+ = expand("%:t:r")<cr>')
 
+-- Копируем весь файл в буфер
+map("n", "<leader>y", "ggVG\"+y``", { desc = "Copy entire file" })
+
 map("x", "p", '"_dP', { desc = "Replace without yanking" })
 map("n", "c", '"_c', { desc = "Change without yanking" })
 map("n", "C", '"_C', { desc = "Change until EOL without yanking" })
@@ -52,6 +55,12 @@ map("n", "<leader>R", function()
     vim.cmd(":%s/\\b" .. word .. "\\b/" .. input .. "/gc")
   end
 end, { desc = "Global Replace with confirmation" })
+
+-- Spectre keybindings
+map("n", "<leader>S", '<cmd>lua require("spectre").toggle()<CR>', { desc = "Toggle Spectre" })
+map("n", "<leader>z", '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', { desc = "Search current word" })
+map("v", "<leader>z", '<esc><cmd>lua require("spectre").open_visual()<CR>', { desc = "Search current word" })
+map("n", "<leader>sp", '<cmd>lua require("spectre").open_file_search({select_word=true})<CR>', { desc = "Search on current file" })
 
 map("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
 map("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
