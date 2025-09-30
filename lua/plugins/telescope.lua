@@ -58,6 +58,7 @@ return {
               preview_cutoff = 120,
               prompt_position = "bottom",
               width = 0.98,
+              preview_width = 0.6,
             },
           },
           -- path_display = { 'smart' },
