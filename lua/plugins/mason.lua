@@ -8,11 +8,12 @@ return {
         ui = {
           border = "rounded",
         },
+        PATH = "prepend", -- Add Mason bin to PATH
       }
       local registry = require "mason-registry"
 
       -- auto install formatters
-      for _, pkg_name in ipairs { "stylua", "prettierd" } do
+      for _, pkg_name in ipairs { "stylua", "prettierd", "eslint_d" } do
         local ok, pkg = pcall(registry.get_package, pkg_name)
         if ok then
           if not pkg:is_installed() then
