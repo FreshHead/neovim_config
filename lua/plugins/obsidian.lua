@@ -6,6 +6,10 @@ return {
     "nvim-lua/plenary.nvim",
     "3rd/image.nvim",
   },
+  keys = {
+    { "<leader>on", "<cmd>Obsidian new<cr>", desc = "New Obsidian note" },
+    { "<leader>ot", "<cmd>Obsidian template<cr>", desc = "Insert template" },
+  },
   -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
   event = {
     -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
@@ -38,6 +42,24 @@ return {
         nvim_cmp = true,
         min_chars = 2,
       },
+      -- Templates configuration
+      templates = {
+        folder = "5 - Templates",
+        date_format = "%d.%m.%Y",
+        time_format = "%H:%M",
+        substitutions = {},
+      },
+      -- New notes location
+      new_notes_location = "notes_subdir",
+      notes_subdir = "6 - Main notes",
+      -- Use title as filename instead of random ID
+      note_id_func = function(title)
+        if title ~= nil then
+          return title
+        else
+          return tostring(os.time())
+        end
+      end,
       -- Use new keymap system instead of deprecated mappings
       -- Set up the gf mapping outside of obsidian config
       disable_frontmatter = true,
@@ -68,7 +90,7 @@ return {
       callback = function()
         vim.keymap.set("n", "gf", function()
           local success, result = pcall(function()
-            return vim.cmd("ObsidianFollowLink")
+            return vim.cmd("Obsidian follow")
           end)
           if not success then
             vim.cmd("normal! gf")
@@ -76,5 +98,6 @@ return {
         end, { buffer = true, desc = "Follow obsidian link or normal gf" })
       end,
     })
+
   end,
 }
