@@ -9,14 +9,25 @@ return {
   keys = {
     { "<leader>on", "<cmd>Obsidian new<cr>", desc = "New Obsidian note" },
     { "<leader>ot", "<cmd>Obsidian template<cr>", desc = "Insert template" },
+    { "<leader>oT", "<cmd>Obsidian tags<cr>", desc = "Search notes by tag" },
+    {
+      "<leader>og",
+      function()
+        local api = require("obsidian.api")
+        local tag = api.cursor_tag()
+        if tag then
+          vim.cmd("Obsidian tags " .. tag)
+        else
+          vim.notify("No tag under cursor", vim.log.levels.WARN)
+        end
+      end,
+      desc = "Go to notes with tag under cursor",
+    },
   },
   -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
   event = {
-    -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
-    -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/*.md"
-    -- refer to `:h file-pattern` for more examples
-    "BufReadPre ~/Documents/frontend/*.md",
-    "BufNewFile ~/Documents/frontend/*.md",
+    "BufReadPre " .. vim.fn.expand "~" .. "/Documents/frontend/**/*.md",
+    "BufNewFile " .. vim.fn.expand "~" .. "/Documents/frontend/**/*.md",
   },
   ---@module 'obsidian'
   ---@type obsidian.config
@@ -89,13 +100,33 @@ return {
       pattern = "markdown",
       callback = function()
         vim.keymap.set("n", "gf", function()
-          local success, result = pcall(function()
-            return vim.cmd("Obsidian follow")
+          -- Get word under cursor (handle [[link]] format)
+          local line = vim.fn.getline(".")
+          local col = vim.fn.col(".")
+          local link = line:match("%[%[([^%]]+)%]%]")
+
+          if link then
+            -- Search for file in vault
+            local vault_path = vim.fn.expand("~/Documents/frontend")
+            local handle = io.popen('find "' .. vault_path .. '" -name "' .. link .. '.md" 2>/dev/null | head -1')
+            local result = handle:read("*a")
+            handle:close()
+            result = result:gsub("%s+$", "")
+
+            if result ~= "" then
+              vim.cmd("edit " .. result)
+              return
+            end
+          end
+
+          -- Fallback to Obsidian follow
+          local success = pcall(function()
+            vim.cmd("Obsidian follow")
           end)
           if not success then
-            vim.cmd("normal! gf")
+            vim.notify("Link not found", vim.log.levels.WARN)
           end
-        end, { buffer = true, desc = "Follow obsidian link or normal gf" })
+        end, { buffer = true, desc = "Follow obsidian link" })
       end,
     })
 

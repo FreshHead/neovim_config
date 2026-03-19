@@ -122,6 +122,27 @@ return {
         }
       })
       vim.lsp.enable "cssls"
+
+      -- HTML
+      vim.lsp.config("html", {
+        capabilities = capabilities,
+        filetypes = { "html", "templ" },
+      })
+      vim.lsp.enable "html"
+
+      -- Emmet
+      vim.lsp.config("emmet_ls", {
+        capabilities = capabilities,
+        filetypes = { "html", "css", "scss", "less", "vue", "javascriptreact", "typescriptreact" },
+        init_options = {
+          html = {
+            options = {
+              ["bem.enabled"] = true,
+            },
+          },
+        },
+      })
+      vim.lsp.enable "emmet_ls"
     end,
   },
 }
