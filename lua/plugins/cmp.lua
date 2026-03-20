@@ -107,7 +107,21 @@ return {
             -- set group index to 0 to skip loading LuaLS completions as lazydev recommends it
             group_index = 0,
           },
-          { name = "nvim_lsp" },
+          {
+            name = "nvim_lsp",
+            entry_filter = function(entry, ctx)
+              -- Filter out bad emmet completions like <b:0></b:0>
+              local client = entry.source.source.client
+              if client and client.name == "emmet_ls" then
+                local item = entry:get_completion_item()
+                local text = item.textEdit and item.textEdit.newText or ""
+                if text:match("^<[%w%-_]+:[%w%-_]+>") then
+                  return false
+                end
+              end
+              return true
+            end,
+          },
           { name = "luasnip" },
           { name = "path" },
         },
