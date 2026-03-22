@@ -26,6 +26,30 @@ return {
     local f = ls.function_node
     local rep = extras.rep
 
+    -- Проверяет, что курсор НЕ внутри <script> секции Vue файла
+    local not_in_vue_script = function()
+      local bufnr = vim.api.nvim_get_current_buf()
+      local ft = vim.bo[bufnr].filetype
+      if ft ~= "vue" then
+        return true
+      end
+
+      local ok, ts_utils = pcall(require, "nvim-treesitter.ts_utils")
+      if not ok then
+        return true
+      end
+
+      local node = ts_utils.get_node_at_cursor()
+      while node do
+        local node_type = node:type()
+        if node_type == "script_element" then
+          return false
+        end
+        node = node:parent()
+      end
+      return true
+    end
+
     local get_filename = function()
       local filename = vim.fn.expand "%:t:r"
       return filename:gsub("^%l", string.upper)
@@ -97,13 +121,13 @@ return {
         t { "", "}" },
       }),
 
-      s({ trig = "te", name = "Just Vue template" }, {
+      s({ trig = "te", name = "Just Vue template", show_condition = not_in_vue_script }, {
         t { "<template>", "" },
         i(0),
         t { "", "</template>" },
       }),
 
-      s({ trig = "SFC", name = "Vue SFC" }, {
+      s({ trig = "SFC", name = "Vue SFC", show_condition = not_in_vue_script }, {
         t { "<script setup lang='ts'>", "", "" },
         t "</script>",
         t { "", "<template>", "" },
