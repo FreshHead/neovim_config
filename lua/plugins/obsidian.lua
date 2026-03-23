@@ -9,16 +9,60 @@ return {
   keys = {
     { "<leader>on", "<cmd>Obsidian new<cr>", desc = "New Obsidian note" },
     { "<leader>ot", "<cmd>Obsidian template<cr>", desc = "Insert template" },
-    { "<leader>oT", "<cmd>Obsidian tags<cr>", desc = "Search notes by tag" },
+    {
+      "<leader>oT",
+      function()
+        local vault_path = vim.fn.expand("~/Documents/frontend")
+        local tags_dir = vault_path .. "/3 - Tags"
+
+        -- Get list of tag files
+        local tags = {}
+        local handle = io.popen('ls "' .. tags_dir .. '" 2>/dev/null')
+        if handle then
+          for line in handle:lines() do
+            local tag = line:gsub("%.md$", "")
+            table.insert(tags, tag)
+          end
+          handle:close()
+        end
+
+        if #tags == 0 then
+          vim.notify("No tags found in " .. tags_dir, vim.log.levels.WARN)
+          return
+        end
+
+        -- Use vim.ui.select to pick a tag
+        vim.ui.select(tags, { prompt = "Select tag:" }, function(choice)
+          if not choice then return end
+          -- Search for notes containing [[Tag]]
+          require("telescope.builtin").grep_string({
+            search = "\\[\\[" .. choice .. "\\]\\]",
+            use_regex = true,
+            cwd = vault_path,
+            prompt_title = "Notes with [[" .. choice .. "]]",
+          })
+        end)
+      end,
+      desc = "Search notes by tag",
+    },
     {
       "<leader>og",
       function()
-        local api = require("obsidian.api")
-        local tag = api.cursor_tag()
-        if tag then
-          vim.cmd("Obsidian tags " .. tag)
+        -- Get wiki link under cursor
+        local line = vim.fn.getline(".")
+        local col = vim.fn.col(".")
+        local link = line:match("%[%[([^%]]+)%]%]")
+
+        if link then
+          local vault_path = vim.fn.expand("~/Documents/frontend")
+          require("telescope.builtin").grep_string({
+            search = "\\[\\[" .. link .. "\\]\\]",
+            use_regex = true,
+            cwd = vault_path,
+            prompt_title = "Notes with [[" .. link .. "]]",
+          })
         else
-          vim.notify("No tag under cursor", vim.log.levels.WARN)
+          vim.notify("No [[link]] under cursor", vim.log.levels.WARN)
         end
       end,
       desc = "Go to notes with tag under cursor",
@@ -74,26 +118,11 @@ return {
       end,
       -- Use new keymap system instead of deprecated mappings
       -- Set up the gf mapping outside of obsidian config
-      disable_frontmatter = true,
+      frontmatter = { enabled = false },
       legacy_commands = false,
       ui = {
         enable = false, -- Disable UI features to avoid conceallevel warning
       },
-      -- Настройка для обработки изображений
-      follow_url_func = function(url)
-        -- Если это локальный файл изображения - открыть в nvim для inline просмотра
-        if
-          url:match "^[^:]*%.png$"
-          or url:match "^[^:]*%.jpg$"
-          or url:match "^[^:]*%.jpeg$"
-          or url:match "^[^:]*%.gif$"
-        then
-          vim.cmd("edit " .. url)
-        else
-          -- Внешние ссылки открываем в браузере
-          vim.fn.jobstart({ "xdg-open", url }, { detach = true })
-        end
-      end,
     }
 
     -- Set up keymaps after obsidian setup (replaces deprecated mappings config)
