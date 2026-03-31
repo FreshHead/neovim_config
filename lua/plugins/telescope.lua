@@ -50,6 +50,15 @@ return {
         --  All the info you're looking for is in `:help telescope.setup()`
         --
         defaults = {
+          vimgrep_arguments = {
+            "rg",
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case",
+          },
           sorting_strategy = "ascending",
 
           layout_config = {
@@ -72,6 +81,11 @@ return {
           --   mappings = {
           --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
           --   },
+        },
+        pickers = {
+          find_files = {
+            find_command = { "fd", "--type", "f", "--strip-cwd-prefix", "--hidden", "--ignore-case" },
+          },
         },
         extensions = {
           ["ui-select"] = {

@@ -75,7 +75,14 @@ return {
       vim.lsp.enable "ts_ls"
 
       -- Vue JS
-      vim.lsp.config("vue_ls", { capabilities = capabilities })
+      vim.lsp.config("vue_ls", {
+        capabilities = capabilities,
+        init_options = {
+          typescript = {
+            tsdk = vim.fn.stdpath("data") .. "/mason/packages/vue-language-server/node_modules/typescript/lib",
+          },
+        },
+      })
       vim.lsp.enable "vue_ls"
 
       -- Lua
