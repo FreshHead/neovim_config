@@ -88,6 +88,12 @@ return {
           },
         },
         extensions = {
+          fzf = {
+            fuzzy = true,
+            override_generic_sorter = true,
+            override_file_sorter = true,
+            case_mode = "ignore_case",
+          },
           ["ui-select"] = {
             require("telescope.themes").get_dropdown(),
           },
@@ -102,7 +108,39 @@ return {
       local builtin = require "telescope.builtin"
       vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
       vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
-      vim.keymap.set("n", "<leader>f", builtin.find_files, { desc = "[S]earch [F]iles" })
+      -- Сортировщик с поддержкой Unicode (кириллица): vim.fn.tolower складывает
+      -- регистр корректно, в отличие от ASCII-only fzf-native и Lua fzy
+      local function unicode_fzy_sorter()
+        local fzy = require "telescope.algos.fzy"
+        return require("telescope.sorters").new {
+          scoring_function = function(_, prompt, line)
+            local p = vim.fn.tolower(prompt)
+            local l = vim.fn.tolower(line)
+            if not fzy.has_match(p, l) then
+              return -1
+            end
+            return fzy.score(p, l)
+          end,
+          highlighter = function(_, prompt, display)
+            local p = vim.fn.tolower(prompt)
+            local d = vim.fn.tolower(display)
+            return fzy.positions(p, d)
+          end,
+        }
+      end
+
+      vim.keymap.set("n", "<leader>f", function()
+        local cwd = vim.fn.getcwd()
+        local frontend = vim.fn.expand "~/Documents/frontend"
+        if cwd == frontend or cwd:sub(1, #frontend + 1) == frontend .. "/" then
+          builtin.find_files {
+            find_command = { "rg", "--files", "--hidden", "--ignore-case" },
+            sorter = unicode_fzy_sorter(),
+          }
+        else
+          builtin.find_files()
+        end
+      end, { desc = "[S]earch [F]iles" })
       vim.keymap.set("n", "<leader>u", "viwy")
       vim.keymap.set("n", "<leader>ss", builtin.builtin, { desc = "[S]earch [S]elect Telescope" })
       vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
